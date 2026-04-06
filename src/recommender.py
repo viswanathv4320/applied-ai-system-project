@@ -18,6 +18,11 @@ class Song:
     valence: float
     danceability: float
     acousticness: float
+    popularity: int = 50
+    release_decade: str = ""
+    instrumentalness: float = 0.0
+    vocal_presence: float = 0.5
+    complexity: float = 0.5
 
 @dataclass
 class UserProfile:
@@ -48,8 +53,9 @@ class Recommender:
 
 def load_songs(csv_path: str) -> List[Dict]:
     """Read songs from a CSV file and return them as a list of dicts with typed values."""
-    float_fields = {"energy", "valence", "danceability", "acousticness"}
-    int_fields = {"tempo", "tempo_bpm"}
+    float_fields = {"energy", "valence", "danceability", "acousticness",
+                    "instrumentalness", "vocal_presence", "complexity"}
+    int_fields = {"tempo", "tempo_bpm", "popularity"}
 
     songs = []
 
@@ -104,48 +110,176 @@ MOOD_ALIASES = {
     "motivated": "intense",
 }
 
-NUMERICAL_WEIGHTS = {
-    "energy":       (1.5, 1.0),
-    "valence":      (1.0, 1.0),
-    "danceability": (0.9, 1.0),
-    "acousticness": (0.8, 1.0),
-    "tempo_bpm":    (0.8, 120),
-    "tempo":        (0.8, 120),
+# Used to award partial credit for nearby release eras (e.g. 2010s ≈ 2020s)
+DECADE_ORDER = ["1950s", "1960s", "1970s", "1980s", "1990s", "2000s", "2010s", "2020s"]
+
+# ---------------------------------------------------------------------------
+# Scoring modes — Strategy pattern via config dicts.
+# Each mode defines the weights for categorical features (genre, mood, decade)
+# and overrides for numerical features.  All modes are calibrated to max ~10.0.
+#
+# Structure of each mode dict:
+#   genre_exact    — points for an exact genre match
+#   genre_similar  — points for a similar-genre match (half of genre_exact)
+#   mood           — points for a mood match (exact or alias)
+#   decade_exact   — points for matching release decade exactly
+#   decade_adjacent— points for being one decade away
+#   numerical      — {feature: (weight, range)} — same shape as old NUMERICAL_WEIGHTS
+# ---------------------------------------------------------------------------
+
+SCORING_MODES: Dict[str, Dict] = {
+
+    # ---- balanced (default) ------------------------------------------------
+    # Genre and mood share influence roughly equally with numericals.
+    # Max: 1.5 + 2.0 + 0.4 + 6.1 = 10.0
+    "balanced": {
+        "genre_exact":     1.5,
+        "genre_similar":   0.75,
+        "mood":            2.0,
+        "decade_exact":    0.4,
+        "decade_adjacent": 0.2,
+        "numerical": {
+            "energy":           (2.0, 1.0),
+            "valence":          (1.0, 1.0),
+            "danceability":     (0.7, 1.0),
+            "acousticness":     (0.6, 1.0),
+            "tempo_bpm":        (0.8, 120),
+            "tempo":            (0.8, 120),
+            "instrumentalness": (0.3, 1.0),
+            "vocal_presence":   (0.3, 1.0),
+            "complexity":       (0.2, 1.0),
+            "popularity":       (0.2, 100),
+        },
+    },
+
+    # ---- genre_first -------------------------------------------------------
+    # Genre is the strongest single signal; numericals are reduced.
+    # Use when the user's genre preference is very deliberate.
+    # Max: 3.5 + 1.5 + 0.3 + 4.7 = 10.0
+    "genre_first": {
+        "genre_exact":     3.5,
+        "genre_similar":   1.75,
+        "mood":            1.5,
+        "decade_exact":    0.3,
+        "decade_adjacent": 0.15,
+        "numerical": {
+            "energy":           (1.5, 1.0),
+            "valence":          (0.8, 1.0),
+            "danceability":     (0.6, 1.0),
+            "acousticness":     (0.5, 1.0),
+            "tempo_bpm":        (0.7, 120),
+            "tempo":            (0.7, 120),
+            "instrumentalness": (0.2, 1.0),
+            "vocal_presence":   (0.2, 1.0),
+            "complexity":       (0.1, 1.0),
+            "popularity":       (0.1, 100),
+        },
+    },
+
+    # ---- mood_first --------------------------------------------------------
+    # Mood and valence dominate; genre is a light filter only.
+    # Use when emotional tone matters more than musical style.
+    # Max: 1.0 + 3.5 + 0.3 + 5.2 = 10.0
+    "mood_first": {
+        "genre_exact":     1.0,
+        "genre_similar":   0.5,
+        "mood":            3.5,
+        "decade_exact":    0.3,
+        "decade_adjacent": 0.15,
+        "numerical": {
+            "energy":           (1.8, 1.0),
+            "valence":          (1.2, 1.0),   # valence boosted — tracks emotional positivity
+            "danceability":     (0.6, 1.0),
+            "acousticness":     (0.4, 1.0),
+            "tempo_bpm":        (0.6, 120),
+            "tempo":            (0.6, 120),
+            "instrumentalness": (0.2, 1.0),
+            "vocal_presence":   (0.2, 1.0),
+            "complexity":       (0.1, 1.0),
+            "popularity":       (0.1, 100),
+        },
+    },
+
+    # ---- energy_focused ----------------------------------------------------
+    # Energy drives everything; genre and mood are minor bonuses.
+    # Use for activity-based playlists (workout, focus, sleep).
+    # Max: 1.0 + 1.2 + 0.2 + 7.6 = 10.0
+    "energy_focused": {
+        "genre_exact":     1.0,
+        "genre_similar":   0.5,
+        "mood":            1.2,
+        "decade_exact":    0.2,
+        "decade_adjacent": 0.1,
+        "numerical": {
+            "energy":           (4.0, 1.0),   # heavily dominant
+            "valence":          (0.9, 1.0),
+            "danceability":     (0.7, 1.0),
+            "acousticness":     (0.5, 1.0),
+            "tempo_bpm":        (0.8, 120),
+            "tempo":            (0.8, 120),
+            "instrumentalness": (0.3, 1.0),
+            "vocal_presence":   (0.2, 1.0),
+            "complexity":       (0.1, 1.0),
+            "popularity":       (0.1, 100),
+        },
+    },
 }
 
-def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
-    """Score a song against user preferences (max 10.0) and return (score, reason strings)."""
+# Keep NUMERICAL_WEIGHTS as a convenience alias for the default mode.
+NUMERICAL_WEIGHTS = SCORING_MODES["balanced"]["numerical"]
+
+def score_song(user_prefs: Dict, song: Dict, mode: str = "balanced") -> Tuple[float, List[str]]:
+    """Score a song against user preferences using the given scoring mode (max ~10.0)."""
+    cfg = SCORING_MODES.get(mode, SCORING_MODES["balanced"])
     score = 0.0
     reasons = []
 
-    # --- Genre (max 3.0) ---
+    # --- Genre ---
     user_genre = (user_prefs.get("genre") or "").lower()
-    song_genre = (song.get("genre") or "").lower()
+    song_genre  = (song.get("genre") or "").lower()
 
     if user_genre and song_genre:
         if song_genre == user_genre:
-            score += 3.0
-            reasons.append(f"genre match: {song_genre} (+3.0)")
+            pts = cfg["genre_exact"]
+            score += pts
+            reasons.append(f"genre match: {song_genre} (+{pts:.2f})")
         elif song_genre in SIMILAR_GENRES.get(user_genre, set()):
-            score += 1.5
-            reasons.append(f"similar genre: {song_genre} ~ {user_genre} (+1.5)")
+            pts = cfg["genre_similar"]
+            score += pts
+            reasons.append(f"similar genre: {song_genre} ~ {user_genre} (+{pts:.2f})")
 
-    # --- Mood (max 2.0) ---
+    # --- Mood ---
     user_mood = (user_prefs.get("mood") or "").lower()
-    song_mood = (song.get("mood") or "").lower()
+    song_mood  = (song.get("mood") or "").lower()
 
     if user_mood and song_mood:
         resolved = MOOD_ALIASES.get(user_mood, user_mood)
         if song_mood == user_mood or song_mood == resolved:
-            score += 2.0
-            reasons.append(f"mood match: {song_mood} (+2.0)")
+            pts = cfg["mood"]
+            score += pts
+            reasons.append(f"mood match: {song_mood} (+{pts:.2f})")
 
-    # --- Numerical features (max 5.0 combined) ---
-    for feature, (weight, range_) in NUMERICAL_WEIGHTS.items():
+    # --- Release Decade ---
+    user_decade = (user_prefs.get("release_decade") or "").lower()
+    song_decade  = (song.get("release_decade") or "").lower()
+
+    if user_decade and song_decade and user_decade in DECADE_ORDER and song_decade in DECADE_ORDER:
+        gap = abs(DECADE_ORDER.index(song_decade) - DECADE_ORDER.index(user_decade))
+        if gap == 0:
+            pts = cfg["decade_exact"]
+            score += pts
+            reasons.append(f"decade match: {song_decade} (+{pts:.2f})")
+        elif gap == 1:
+            pts = cfg["decade_adjacent"]
+            score += pts
+            reasons.append(f"adjacent decade: {song_decade} ~ {user_decade} (+{pts:.2f})")
+
+    # --- Numerical features ---
+    for feature, (weight, range_) in cfg["numerical"].items():
         pref_value = user_prefs.get(feature)
         song_value = song.get(feature)
 
-        # Only one of tempo / tempo_bpm will be in the song dict
+        # Only one of tempo / tempo_bpm will be present in the song dict
         if song_value is None and feature == "tempo_bpm":
             song_value = song.get("tempo")
         if song_value is None and feature == "tempo":
@@ -161,11 +295,16 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     return round(score, 2), reasons
 
 
-def recommend_songs(user_prefs: Dict, songs: List[Dict], k: int = 5) -> List[Tuple[Dict, float, str]]:
-    """Score all songs against user preferences and return the top k as (song, score, explanation) tuples."""
+def recommend_songs(
+    user_prefs: Dict,
+    songs: List[Dict],
+    k: int = 5,
+    mode: str = "balanced",
+) -> List[Tuple[Dict, float, str]]:
+    """Score all songs and return the top k as (song, score, explanation) tuples."""
     scored = []
     for song in songs:
-        score, reasons = score_song(user_prefs, song)
+        score, reasons = score_song(user_prefs, song, mode=mode)
         explanation = ", ".join(reasons) if reasons else "no matching features"
         scored.append((song, score, explanation))
 

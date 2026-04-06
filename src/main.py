@@ -12,6 +12,10 @@ You will implement the functions in recommender.py:
 import re
 from recommender import load_songs, recommend_songs
 
+# Change this to switch the scoring strategy for all profiles.
+# Options: "balanced" | "genre_first" | "mood_first" | "energy_focused"
+SCORING_MODE = "balanced"
+
 _FEATURE_LABELS = {
     "energy": "Energy",
     "valence": "Valence",
@@ -45,18 +49,124 @@ def _format_reason(raw: str) -> str:
     return f"{label.strip().capitalize()}: {detail.strip()}" if detail else raw.capitalize()
 
 
-def main() -> None:
-    songs = load_songs("data/songs.csv")
-    print(f"Loaded songs: {len(songs)}")
+TEST_PROFILES = [
+    {
+        "label": "High-Energy Pop",
+        "prefs": {
+            "genre": "pop",
+            "mood": "happy",
+            "energy": 0.85,
+            "valence": 0.80,
+            "tempo_bpm": 125,
+            "danceability": 0.85,
+            "acousticness": 0.10,
+        },
+    },
+    {
+        "label": "Late-Night Lo-fi Study",
+        "prefs": {
+            "genre": "lofi",
+            "mood": "chill",
+            "energy": 0.38,
+            "valence": 0.58,
+            "tempo_bpm": 78,
+            "danceability": 0.60,
+            "acousticness": 0.80,
+        },
+    },
+    {
+        "label": "Edge Case: Sad but Energetic Rock",
+        "prefs": {
+            "genre": "rock",
+            "mood": "sad",
+            "energy": 0.88,
+            "valence": 0.20,
+            "tempo_bpm": 140,
+            "danceability": 0.50,
+            "acousticness": 0.12,
+        },
+    },
+    {
+        "label": "Extreme: Ultra-Quiet Ambient",
+        "prefs": {
+            "genre": "ambient",
+            "mood": "chill",
+            "energy": 0.10,
+            "valence": 0.60,
+            "tempo_bpm": 62,
+            "danceability": 0.25,
+            "acousticness": 0.98,
+        },
+    },
+    {
+        "label": "Edge Case: Genre Not in Catalog",
+        "prefs": {
+            "genre": "classical",
+            "mood": "calm",
+            "energy": 0.20,
+            "valence": 0.65,
+            "tempo_bpm": 70,
+            "danceability": 0.22,
+            "acousticness": 0.95,
+        },
+    },
+    # --- Experiment profiles ---
+    {
+        "label": "Baseline Pop",
+        "prefs": {
+            "genre": "pop",
+            "mood": "happy",
+            "energy": 0.85,
+            "valence": 0.80,
+            "tempo_bpm": 125,
+            "danceability": 0.85,
+            "acousticness": 0.10,
+        },
+    },
+    {
+        "label": "No Genre",
+        "prefs": {
+            # genre omitted — genre score will be 0 for every song
+            "mood": "happy",
+            "energy": 0.85,
+            "valence": 0.80,
+            "tempo_bpm": 125,
+            "danceability": 0.85,
+            "acousticness": 0.10,
+        },
+    },
+    {
+        "label": "Lower Energy",
+        "prefs": {
+            "genre": "pop",
+            "mood": "happy",
+            "energy": 0.50,  # dropped from 0.85 — tests energy sensitivity
+            "valence": 0.80,
+            "tempo_bpm": 125,
+            "danceability": 0.85,
+            "acousticness": 0.10,
+        },
+    },
+    {
+        "label": "Mood Flip",
+        "prefs": {
+            "genre": "pop",
+            "mood": "sad",   # no catalog song has mood=sad — mood score always 0
+            "energy": 0.85,
+            "valence": 0.20,
+            "tempo_bpm": 125,
+            "danceability": 0.85,
+            "acousticness": 0.10,
+        },
+    },
+]
 
-    # Starter example profile
-    user_prefs = {"genre": "pop", "mood": "happy", "energy": 0.8}
 
-    recommendations = recommend_songs(user_prefs, songs, k=5)
-
-    print("\n" + "=" * 40)
-    print("  Top Recommendations")
-    print("=" * 40)
+def _print_recommendations(recommendations: list, label: str, mode: str = "balanced") -> None:
+    print("\n" + "=" * 44)
+    print(f"  Profile : {label}")
+    print(f"  Mode    : {mode}")
+    print("=" * 44)
 
     for i, (song, score, explanation) in enumerate(recommendations, start=1):
         title  = song.get("title", "Unknown").title()
@@ -71,7 +181,16 @@ def main() -> None:
         for reason in reasons[:4]:
             print(f"     • {_format_reason(reason)}")
 
-        print("   " + "-" * 34)
+        print("   " + "-" * 36)
+
+
+def main() -> None:
+    songs = load_songs("data/songs.csv")
+    print(f"Loaded songs: {len(songs)}")
+
+    for profile in TEST_PROFILES:
+        recommendations = recommend_songs(profile["prefs"], songs, k=3, mode=SCORING_MODE)
+        _print_recommendations(recommendations, profile["label"], mode=SCORING_MODE)
 
 
 if __name__ == "__main__":
