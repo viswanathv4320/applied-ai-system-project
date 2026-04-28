@@ -26,13 +26,13 @@ _EXTRACT_TOOL = {
             "genre": {
                 "type": "string",
                 "description": (
-                    "Music genre. One of: lofi, pop, rock, ambient, jazz, indie pop, "
-                    "synthwave, electronic, folk, r&b, blues, hip-hop, classical, country."
+                    "Music genre. One of: pop, indie pop, indie rock, r&b, hip-hop, "
+                    "electronic, bollywood."
                 ),
             },
             "mood": {
                 "type": "string",
-                "description": "Emotional mood. One of: happy, chill, sad, intense, romantic, melancholy.",
+                "description": "Emotional mood. One of: happy, intense, melancholy, romantic, confident, moody, motivated.",
             },
             "energy": {
                 "type": "number",

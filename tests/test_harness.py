@@ -122,10 +122,10 @@ class TestGetRecommendations:
         from src.agent import get_recommendations
         from src.recommender import load_songs
         songs = load_songs(SONGS_CSV)
-        prefs = {"genre": "lofi", "mood": "chill", "energy": 0.4}
+        prefs = {"genre": "indie pop", "mood": "happy", "energy": 0.7}
         results = get_recommendations(prefs, songs, k=3)
         top_song = results[0][0]
-        assert top_song["genre"] in {"lofi", "ambient"}  # lofi or its similar genre
+        assert top_song["genre"] in {"indie pop", "pop"}  # exact or similar genre
 
     def test_mode_affects_ranking(self):
         """genre_first mode should rank genre matches higher than balanced."""

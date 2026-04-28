@@ -1,16 +1,11 @@
-"""
-Command line runner for the Music Recommender Simulation.
-
-This file helps you quickly run and test your recommender.
-
-You will implement the functions in recommender.py:
-- load_songs
-- score_song
-- recommend_songs
-"""
-
 import re
-from recommender import load_songs, recommend_songs
+import sys
+from .recommender import load_songs, recommend_songs
+
+try:
+    from .agent import run_agent
+except ImportError:
+    from agent import run_agent
 
 # Change this to switch the scoring strategy for all profiles.
 # Options: "balanced" | "genre_first" | "mood_first" | "energy_focused"
@@ -63,22 +58,22 @@ TEST_PROFILES = [
         },
     },
     {
-        "label": "Late-Night Lo-fi Study",
+        "label": "Late-Night Indie Study",
         "prefs": {
-            "genre": "lofi",
-            "mood": "chill",
+            "genre": "indie pop",
+            "mood": "moody",
             "energy": 0.38,
-            "valence": 0.58,
-            "tempo_bpm": 78,
-            "danceability": 0.60,
-            "acousticness": 0.80,
+            "valence": 0.45,
+            "tempo_bpm": 85,
+            "danceability": 0.50,
+            "acousticness": 0.65,
         },
     },
     {
-        "label": "Edge Case: Sad but Energetic Rock",
+        "label": "Edge Case: Sad but Energetic Indie Rock",
         "prefs": {
-            "genre": "rock",
-            "mood": "sad",
+            "genre": "indie rock",
+            "mood": "sad",   # not in catalog, not in aliases — mood score always 0
             "energy": 0.88,
             "valence": 0.20,
             "tempo_bpm": 140,
@@ -87,15 +82,15 @@ TEST_PROFILES = [
         },
     },
     {
-        "label": "Extreme: Ultra-Quiet Ambient",
+        "label": "Extreme: Ultra-Quiet Electronic",
         "prefs": {
-            "genre": "ambient",
-            "mood": "chill",
+            "genre": "electronic",
+            "mood": "moody",
             "energy": 0.10,
-            "valence": 0.60,
-            "tempo_bpm": 62,
+            "valence": 0.50,
+            "tempo_bpm": 70,
             "danceability": 0.25,
-            "acousticness": 0.98,
+            "acousticness": 0.90,
         },
     },
     {
@@ -184,13 +179,35 @@ def _print_recommendations(recommendations: list, label: str, mode: str = "balan
         print("   " + "-" * 36)
 
 
-def main() -> None:
-    songs = load_songs("data/songs.csv")
-    print(f"Loaded songs: {len(songs)}")
+def _print_agent_result(result: dict) -> None:
+    print("\n" + "=" * 52)
+    print("  AGENTIC PIPELINE RESULT")
+    print("=" * 52)
+    print(f'\n  Input    : "{result["user_input"]}"')
+    print(f"\n  Profile  : {result['profile']}")
 
-    for profile in TEST_PROFILES:
-        recommendations = recommend_songs(profile["prefs"], songs, k=3, mode=SCORING_MODE)
-        _print_recommendations(recommendations, profile["label"], mode=SCORING_MODE)
+    print("\n  Recommendations:")
+    for i, rec in enumerate(result["recommendations"], start=1):
+        print(f"\n    {i}. {rec['title']} — {rec['artist']}")
+        print(f"       Genre : {rec.get('genre', '?')}  |  Mood : {rec.get('mood', '?')}")
+        print(f"       Score : {rec['score']:.2f} / 10")
+
+    print(f"\n  Reflection:\n    {result['reflection']}")
+    print("\n" + "=" * 52)
+
+
+def main() -> None:
+    query = " ".join(sys.argv[1:]).strip() if len(sys.argv) > 1 else ""
+
+    if query:
+        result = run_agent(query, k=3, mode=SCORING_MODE)
+        _print_agent_result(result)
+    else:
+        songs = load_songs("data/songs.csv")
+        print(f"Loaded songs: {len(songs)}")
+        for profile in TEST_PROFILES:
+            recommendations = recommend_songs(profile["prefs"], songs, k=3, mode=SCORING_MODE)
+            _print_recommendations(recommendations, profile["label"], mode=SCORING_MODE)
 
 
 if __name__ == "__main__":

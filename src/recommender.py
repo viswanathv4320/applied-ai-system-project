@@ -92,22 +92,19 @@ def load_songs(csv_path: str) -> List[Dict]:
     return songs
 
 SIMILAR_GENRES = {
-    "pop":      {"indie pop", "synthwave"},
-    "indie pop":{"pop"},
-    "rock":     {"indie pop"},
-    "lofi":     {"ambient"},
-    "ambient":  {"lofi"},
-    "jazz":     {"lofi"},
-    "synthwave":{"pop", "electronic"},
-    "electronic":{"synthwave"},
+    "pop":       {"indie pop"},
+    "indie pop": {"pop"},
+    "indie rock": {"indie pop", "pop"},
+    "r&b":       {"hip-hop"},
+    "hip-hop":   {"r&b"},
+    "electronic": {"pop"},
 }
 
 MOOD_ALIASES = {
-    "calm":      "chill",
-    "mellow":    "sad",
-    "sad":       "mellow",
-    "focused":   "chill",
-    "motivated": "intense",
+    "calm":      "moody",
+    "mellow":    "melancholy",
+    "chill":     "moody",
+    "focused":   "motivated",
 }
 
 # Used to award partial credit for nearby release eras (e.g. 2010s ≈ 2020s)

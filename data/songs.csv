@@ -1,21 +1,47 @@
 id,title,artist,genre,mood,energy,tempo_bpm,valence,danceability,acousticness,popularity,release_decade,instrumentalness,vocal_presence,complexity
-1,Sunrise City,Neon Echo,pop,happy,0.82,118,0.84,0.79,0.18,74,2020s,0.04,0.91,0.42
-2,Midnight Coding,LoRoom,lofi,chill,0.42,78,0.56,0.62,0.71,61,2010s,0.55,0.45,0.30
-3,Storm Runner,Voltline,rock,intense,0.91,152,0.48,0.66,0.10,68,2010s,0.12,0.82,0.65
-4,Library Rain,Paper Lanterns,lofi,chill,0.35,72,0.60,0.58,0.86,55,2020s,0.72,0.28,0.22
-5,Gym Hero,Max Pulse,pop,intense,0.93,132,0.77,0.88,0.05,82,2020s,0.03,0.94,0.38
-6,Spacewalk Thoughts,Orbit Bloom,ambient,chill,0.28,60,0.65,0.41,0.92,42,2020s,0.88,0.12,0.25
-7,Coffee Shop Stories,Slow Stereo,jazz,relaxed,0.37,90,0.71,0.54,0.89,49,2000s,0.35,0.65,0.72
-8,Night Drive Loop,Neon Echo,synthwave,moody,0.75,110,0.49,0.73,0.22,63,2010s,0.62,0.38,0.48
-9,Focus Flow,LoRoom,lofi,focused,0.40,80,0.59,0.60,0.78,58,2020s,0.68,0.32,0.28
-10,Rooftop Lights,Indigo Parade,indie pop,happy,0.76,124,0.81,0.82,0.35,71,2010s,0.08,0.88,0.45
-11,Broken Compass,The Hollow Keys,folk,sad,0.31,68,0.22,0.38,0.94,44,2010s,0.15,0.85,0.52
-12,Desert Highway,Dustwave,country,relaxed,0.55,96,0.74,0.63,0.77,51,2000s,0.10,0.88,0.40
-13,Bass Cathedral,Undercroft,electronic,intense,0.89,140,0.38,0.91,0.04,56,2010s,0.78,0.22,0.58
-14,Velvet Underground,Cora Vane,r&b,moody,0.61,102,0.52,0.76,0.31,67,2020s,0.06,0.92,0.48
-15,First Snow,Maren Sollis,classical,calm,0.19,64,0.68,0.22,0.97,38,2010s,0.95,0.05,0.78
-16,Golden Hour Run,Bright Terrain,indie pop,motivated,0.78,128,0.88,0.85,0.26,72,2020s,0.07,0.90,0.43
-17,Smoke and Mirrors,Callum Reed,blues,sad,0.44,84,0.29,0.48,0.83,45,2000s,0.22,0.78,0.60
-18,Neon Jungle,VLTG,hip-hop,confident,0.86,95,0.61,0.93,0.07,79,2020s,0.05,0.93,0.52
-19,Rainy Window,Elsa Morrow,jazz,melancholy,0.33,75,0.41,0.44,0.88,46,2010s,0.42,0.58,0.68
-20,Pulse of the City,Static Arc,synthwave,focused,0.72,118,0.55,0.80,0.15,60,2020s,0.55,0.45,0.44
+1,Khamoshi,Ritviz,indie pop,happy,0.72,108,0.78,0.74,0.42,78,2010s,0.02,0.92,0.45
+2,Shouldn't I Give Up,Mehro,indie pop,melancholy,0.38,82,0.32,0.48,0.71,65,2020s,0.04,0.88,0.38
+3,Sapphire,Ed Sheeran,pop,romantic,0.61,96,0.72,0.68,0.38,82,2020s,0.01,0.95,0.48
+4,Arz Kiya Hai,Anuv Jain,indie pop,melancholy,0.35,74,0.38,0.44,0.82,70,2020s,0.06,0.88,0.42
+5,Sarphira,Pritam,bollywood,motivated,0.78,132,0.74,0.72,0.22,72,2020s,0.02,0.94,0.52
+6,Sun Toh,Ritviz,indie pop,romantic,0.55,94,0.68,0.62,0.54,74,2020s,0.03,0.91,0.40
+7,Baaraat,Ritviz,electronic,happy,0.84,128,0.82,0.86,0.12,76,2010s,0.08,0.88,0.55
+8,Mishri,Anuv Jain,indie pop,romantic,0.42,80,0.62,0.52,0.76,72,2020s,0.04,0.90,0.36
+9,Khudi,The Local Train,indie rock,melancholy,0.58,102,0.34,0.52,0.48,68,2010s,0.06,0.88,0.58
+10,Choo Lo,The Local Train,indie rock,romantic,0.52,88,0.56,0.54,0.62,74,2010s,0.04,0.90,0.50
+11,Dil Mere,The Local Train,indie rock,moody,0.62,110,0.42,0.58,0.38,65,2010s,0.05,0.88,0.55
+12,Meri Baaton Mein Tu,Anuv Jain,indie pop,romantic,0.44,78,0.64,0.54,0.72,74,2020s,0.03,0.92,0.38
+13,Tumhare Aane Se,Ashu Shukla,indie pop,romantic,0.40,76,0.60,0.50,0.78,62,2020s,0.04,0.90,0.35
+14,My Universe,Coldplay,pop,happy,0.74,104,0.76,0.70,0.18,86,2020s,0.02,0.94,0.48
+15,APT.,ROSE,pop,happy,0.82,138,0.86,0.84,0.08,90,2020s,0.01,0.96,0.45
+16,Alag Aasmaan,Anuv Jain,indie pop,melancholy,0.36,72,0.36,0.46,0.80,72,2020s,0.05,0.88,0.38
+17,Aahatein,Samyak Prasana,indie pop,melancholy,0.32,68,0.34,0.42,0.84,58,2020s,0.08,0.85,0.32
+18,Wake Me Up,Avicii,electronic,motivated,0.80,124,0.72,0.76,0.32,88,2010s,0.04,0.88,0.52
+19,The Nights,Avicii,electronic,motivated,0.78,126,0.78,0.72,0.18,86,2010s,0.06,0.86,0.50
+20,Horaata,Charanraj MR,sandlewood,melancholy,0.48,84,0.38,0.50,0.58,66,2020s,0.10,0.84,0.55
+21,Sapta Sagaradaache Ello,Charanraj MR,sandlewood,melancholy,0.44,80,0.36,0.46,0.62,68,2020s,0.08,0.86,0.52
+22,Ik Junoon,Vishal Dadlani,bollywood,motivated,0.82,136,0.76,0.74,0.14,72,2000s,0.03,0.92,0.55
+23,Hasi,Ami Mishra,bollywood,romantic,0.38,76,0.62,0.48,0.74,78,2010s,0.04,0.90,0.38
+24,With You,AP Dhillon,r&b,romantic,0.58,88,0.62,0.66,0.32,82,2020s,0.03,0.92,0.45
+25,Blank Space,Taylor Swift,pop,moody,0.76,96,0.58,0.76,0.08,90,2010s,0.00,0.98,0.48
+26,Nights Like This,St. Lundi,indie pop,moody,0.42,84,0.36,0.52,0.62,60,2010s,0.06,0.86,0.42
+27,Laung Da Lashkara,Mahalakshmi Iyer,bollywood,happy,0.78,132,0.82,0.76,0.28,68,2000s,0.04,0.92,0.50
+28,Dildaara,Vishal-Shekhar,bollywood,romantic,0.62,102,0.66,0.62,0.44,70,2010s,0.03,0.92,0.48
+29,Radha,Pritam,bollywood,happy,0.80,128,0.84,0.80,0.18,76,2010s,0.02,0.94,0.50
+30,Thangamey,Anirudh Ravichander,kollywood,romantic,0.56,92,0.64,0.60,0.42,74,2010s,0.04,0.90,0.45
+31,Aye Sinamika,A.R. Rahman,kollywood,happy,0.72,118,0.76,0.72,0.28,72,2020s,0.05,0.90,0.52
+32,Firefly,When Chai Met Toast,indie pop,happy,0.64,104,0.74,0.66,0.52,68,2010s,0.04,0.90,0.42
+33,The Fate of Ophelia,Taylor Swift,pop,melancholy,0.34,76,0.28,0.40,0.78,80,2020s,0.02,0.94,0.45
+34,Run Down The City,Shashwat Sachdev,bollywood,happy,0.76,122,0.78,0.74,0.22,66,2020s,0.04,0.90,0.52
+35,Shararat,Shashwat Sachdev,bollywood,happy,0.80,130,0.82,0.78,0.16,64,2020s,0.03,0.92,0.50
+36,Ramba Ho,Shashwat Sachdev,bollywood,happy,0.82,134,0.80,0.80,0.12,64,2020s,0.04,0.90,0.52
+37,Dhurandhar,Shashwat Sachdev,hip-hop,intense,0.88,140,0.68,0.84,0.06,68,2020s,0.05,0.92,0.62
+38,Ez-Ez,Shashwat Sachdev,hip-hop,confident,0.86,136,0.72,0.86,0.05,70,2020s,0.04,0.93,0.60
+39,Lutt Le Gaya,Shashwat Sachdev,bollywood,moody,0.74,118,0.52,0.76,0.14,62,2020s,0.05,0.90,0.55
+40,FA9LA,Flipperachi,hip-hop,confident,0.84,132,0.68,0.82,0.06,58,2020s,0.06,0.90,0.58
+41,Houdini,Dua Lipa,pop,confident,0.82,126,0.74,0.82,0.04,88,2020s,0.01,0.97,0.50
+42,Levitating,Dua Lipa,pop,happy,0.84,103,0.86,0.84,0.02,92,2020s,0.00,0.98,0.48
+43,Ordinary,Alex Warren,pop,melancholy,0.44,84,0.38,0.50,0.58,74,2020s,0.02,0.94,0.40
+44,Challa,Shashwat Sachdev,bollywood,motivated,0.72,116,0.66,0.68,0.28,64,2020s,0.04,0.90,0.50
+45,Duniyaa,Akhil,bollywood,romantic,0.52,90,0.62,0.58,0.52,80,2010s,0.03,0.92,0.42
+46,Hunter Vantaar,Anirudh Ravichander,kollywood,intense,0.90,148,0.72,0.82,0.08,74,2020s,0.05,0.92,0.60
