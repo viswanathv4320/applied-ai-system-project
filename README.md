@@ -1,6 +1,6 @@
 # 🎵 Music Recommender — Applied AI System
 
-## Original Project (Modules 1–3)
+## Original Project
 
 This project started as a rule-based music recommender system. Given a user's taste profile (genre, mood, energy, valence, etc.), it scores every song in a catalog and returns the top K matches. The original system used a hand-crafted weighted scoring formula across seven audio features and demonstrated how simple heuristics can produce surprisingly useful recommendations — while also exposing clear limitations around mood gaps, catalog size, and genre over-weighting.
 
@@ -248,7 +248,7 @@ Guardrails were able to catch this issue accurately, meaning that if the user re
 
 ## Video Walkthrough
 
-*(Add your Loom link here)*
+
 
 ---
 
