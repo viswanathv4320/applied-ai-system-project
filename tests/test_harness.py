@@ -225,7 +225,7 @@ class TestRunAgent:
             from src.agent import run_agent
             result = run_agent("late night study vibes", songs_path=SONGS_CSV, k=3)
 
-        assert set(result.keys()) == {"user_input", "profile", "recommendations", "reflection"}
+        assert set(result.keys()) == {"user_input", "profile", "recommendations", "warnings", "reflection"}
 
     def test_recommendations_count(self):
         fake_profile = {"genre": "pop", "mood": "happy", "energy": 0.8}
