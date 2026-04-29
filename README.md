@@ -22,41 +22,11 @@ A **19-test automated test harness** proves the pipeline works reliably across a
 
 ## System Architecture
 
-```
-User natural language input
-          │
-          ▼
-┌─────────────────────┐
-│   Stage 1: Parse    │  Claude (tool_choice) → structured profile dict
-│   parse_user_intent │  e.g. {genre: "bollywood", mood: "romantic",
-└─────────────────────┘       energy: 0.4, acousticness: 0.6}
-          │
-          ▼
-┌─────────────────────┐
-│  Stage 2: Score     │  Deterministic scoring — no LLM
-│  recommend_songs()  │  Weighted formula across 7 audio features
-└─────────────────────┘  Returns top K (song, score, explanation) tuples
-          │
-          ▼
-┌─────────────────────┐
-│  Guardrails (rules) │  Checks: low confidence, mood gap, genre gap
-└─────────────────────┘  Logs warnings before LLM sees results
-          │
-          ▼
-┌─────────────────────┐
-│  Stage 3: Reflect   │  Claude evaluates match quality, flags issues,
-│  reflect_on_recs()  │  suggests one concrete improvement
-└─────────────────────┘
-          │
-          ▼
-     Printed output
-  (profile + ranked songs
-   + warnings + reflection)
-```
+![System Architecture](assets/architecture.png)
 
 **Where testing happens:** The test harness patches Stages 1 and 3 with deterministic fakes and runs Stage 2 against the real CSV, isolating the scoring logic from API calls.
 
-**Data flow:** input → LLM parse → dict → scorer → list of tuples → LLM reflect → string
+**Data flow:** input → LLM parse → dict → scorer → list of tuples → guardrails → LLM reflect → string
 
 ---
 
